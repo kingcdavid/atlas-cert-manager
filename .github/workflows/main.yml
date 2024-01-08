@@ -27,10 +27,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Get the version
-        id: get_version
-        run: echo ::set-output name=VERSION::$(echo $GITHUB_REF | cut -d / -f 3)
-
       - name: Log in to the Container registry
         uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
         with:
@@ -62,12 +58,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ steps.get_version.outputs.VERSION }}
+          tag_name:  ${{ steps.meta.outputs.tags }}
+          release_name: Release  ${{ steps.meta.outputs.tags }}
           draft: true
           prerelease: false
           body: |
-            To install: `kubectl apply -f https://github.com/${{ github.repository_owner }}/atlas-cert-manager/releases/download/${{ steps.get_version.outputs.VERSION }}/install.yaml`
+            To install: `kubectl apply -f https://github.com/${{ github.repository_owner }}/atlas-cert-manager/releases/download/ ${{ steps.meta.outputs.tags }}/install.yaml`
 
       - name: Upload Release Asset
         id: upload-release-asset
